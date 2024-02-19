@@ -62,6 +62,7 @@ def detector_free_coarse_matching(
             )
 
         # Matcher runner
+        cfgs["coarse_match_debug"] = False
         if not cfgs["coarse_match_debug"] and osp.exists(cache_dir):
             matches = load_h5(cache_dir, transform_slash=True)
             logger.info("Caches raw matches loaded!")
@@ -157,7 +158,7 @@ def detector_free_coarse_matching(
         logger.info("Combine 2D points!")
         all_kpts = Match2Pts2D(
             matches, dataset.img_dir, name_split=cfgs["matcher"]["pair_name_split"]
-        )
+        ) # names, kpts (x, y, score)
         sub_kpts = chunks(all_kpts, math.ceil(n_imgs / 1))  # equal to only 1 worker
         obj_refs = [points2D_worker(sub_kpt, verbose=verbose) for sub_kpt in sub_kpts]
         keypoints = dict(ChainMap(*obj_refs))
@@ -177,6 +178,7 @@ def detector_free_coarse_matching(
 
         # Post process points2D:
         keypoints = {k: v for k, v in keypoints.items() if isinstance(v, dict)}
+        # keypoints = [name] -> {(x, y): (idx, score)}
         logger.info("Post-processing keypoints...")
         kpts_scores = [
             transform_points2D(sub_kpts, verbose=verbose)

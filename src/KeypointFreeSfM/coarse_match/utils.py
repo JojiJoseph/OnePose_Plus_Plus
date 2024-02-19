@@ -38,6 +38,7 @@ class Match2Pts2D(object):
     def __getitem__(self, idx):
         if isinstance(idx, int):
             name = self.names[idx]
+            # columns of matches: x0, y0, x1, y1, score
             kpts = np.concatenate([self.matches[k][:, [2*id, 2*id+1, 4]]
                         for k, id in self.name2matches[name] if self.matches[k].shape[0] >= self.cov_threshold], 0)
             return name, kpts

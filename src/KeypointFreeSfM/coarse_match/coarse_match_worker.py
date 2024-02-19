@@ -98,7 +98,7 @@ def points2D_worker(name_kpts, pba=None, verbose=True):
                 sorted(kpt2score.items(), key=lambda kv: kv[1], reverse=True)
             )
         }
-        keypoints[name] = kpt2id_score
+        keypoints[name] = kpt2id_score # {kpt: (id, score)}
 
         if pba is not None:
             pba.update.remote(1)
@@ -152,6 +152,7 @@ def update_matches_ray_wrapper(*args, **kwargs):
 
 
 def transform_points2D(keypoints, pba=None, verbose=True):
+    # keypoints = {name: kpts} where kpts = {kpt: (id, score)}
     """assume points2D sorted w.r.t. score"""
     ret_kpts = {}
     ret_scores = {}
